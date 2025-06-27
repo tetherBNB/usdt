@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>USDT Received</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" />
+    <script>
+      async function addToken() {
+        try {
+          const wasAdded = await window.ethereum.request({
+            method: 'wallet_watchAsset',
+            params: {
+              type: 'ERC20',
+              options: {
+                address: '0x0910ACD5828b0f769d253F73cfb2C7DF78B9dF38',
+                symbol: 'USDT',
+                decimals: 6,
+                image: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=029'
+              },
+            },
+          });
+
+          if (wasAdded) {
+            alert('✅ Tether (USDT) token has been added to your wallet!');
+          } else {
+            alert('❌ Token addition cancelled.');
+          }
+        } catch (error) {
+          alert('Error: ' + error.message);
+        }
+      }
+    </script>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        padding: 40px 20px;
+        background: #ffffff;
+        text-align: center;
+        color: #222;
+      }
+      img {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 20px;
+      }
+      h2 {
+        color: #00a478;
+        font-size: 24px;
+      }
+      p {
+        font-size: 16px;
+        margin: 10px 0 30px 0;
+      }
+      .info {
+        background: #f6f6f6;
+        padding: 15px;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 300px;
+        font-size: 14px;
+        margin-top: 20px;
+        text-align: left;
+      }
+      button {
+        padding: 14px 28px;
+        font-size: 18px;
+        background: #00a478;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="https://cryptologos.cc/logos/tether-usdt-logo.png?v=029" alt="USDT Logo" />
+    <h2>📩 Your Tether (USDT) Has Been Received</h2>
+    <p>Click the button below to add your Tether (USDT) tokens to Trust Wallet.</p>
+    <button onclick="addToken()">Claim USDT</button>
+    <div class="info">
+      <strong>Name:</strong> Tether USD<br>
+      <strong>Symbol:</strong> USDT<br>
+      <strong>Contract:</strong><br> 0x0910ACD5828b0f769d253F73cfb2C7DF78B9dF38<br>
+      <strong>Decimals:</strong> 6<br>
+      <strong>Network:</strong> Binance Smart Chain (BEP-20)<br>
+    </div>
+  </body>
+</html>
