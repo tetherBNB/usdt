@@ -1,105 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Trust Wallet - USDT Received</title>
-  <style>
-    body {
-      background: #f3f4f6;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 50px;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      display: inline-block;
-    }
-    h2 {
-      color: green;
-    }
-    .balance {
-      font-size: 28px;
-      color: #1f2937;
-      margin-top: 20px;
-    }
-    button {
-      margin-top: 30px;
-      padding: 12px 24px;
-      font-size: 16px;
-      background-color: #3b82f6;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #2563eb;
-    }
-  </style>
+  <title>MyUSDT Balance Checker</title>
 </head>
 <body>
-  <div class="container">
-    <h2>🎉 USDT Reward Received!</h2>
-    <p>Your Trust Wallet has been credited with:</p>
-    <div class="balance" id="balance">Fetching balance...</div>
-    <button onclick="window.location.reload()">Refresh</button>
-  </div>
+  <h2>MyUSDT Token Balance</h2>
+  <p id="status">Connecting to wallet...</p>
+  <p id="balance"></p>
 
-  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.9.0/dist/web3.min.js"></script>
   <script>
-    const tokenAddress = "0x0910ACD5828b0f769d253F73cfb2C7DF78B9dF38";
-    const tokenABI = [
+    const contractAddress = "0x0910ACD5828b0f769d253F73cfb2C7DF78B9dF38"; // your deployed contract address
+    const contractABI = [
       {
-        constant: true,
-        inputs: [{ name: "account", type: "address" }],
-        name: "balanceOf",
-        outputs: [{ name: "", type: "uint256" }],
-        type: "function"
+        "constant": true,
+        "inputs": [{"name":"_owner","type":"address"}],
+        "name": "balanceOf",
+        "outputs": [{"name":"balance","type":"uint256"}],
+        "type": "function"
       },
       {
-        constant: true,
-        inputs: [],
-        name: "decimals",
-        outputs: [{ name: "", type: "uint8" }],
-        type: "function"
+        "constant": true,
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [{"name":"","type":"uint8"}],
+        "type": "function"
       },
       {
-        constant: true,
-        inputs: [],
-        name: "symbol",
-        outputs: [{ name: "", type: "string" }],
-        type: "function"
+        "constant": true,
+        "inputs": [],
+        "name": "name",
+        "outputs": [{"name":"","type":"string"}],
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [{"name":"","type":"string"}],
+        "type": "function"
       }
     ];
 
-    async function loadBalance() {
-      if (typeof window.ethereum !== "undefined") {
+    async function load() {
+      if (window.ethereum) {
         try {
           const web3 = new Web3(window.ethereum);
-          await window.ethereum.request({ method: "eth_requestAccounts" });
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
           const accounts = await web3.eth.getAccounts();
-          const walletAddress = accounts[0];
+          const user = accounts[0];
+          document.getElementById("status").innerText = `Connected: ${user}`;
 
-          const contract = new web3.eth.Contract(tokenABI, tokenAddress);
-          const balanceRaw = await contract.methods.balanceOf(walletAddress).call();
+          const contract = new web3.eth.Contract(contractABI, contractAddress);
+          const balance = await contract.methods.balanceOf(user).call();
           const decimals = await contract.methods.decimals().call();
           const symbol = await contract.methods.symbol().call();
 
-          const balanceFormatted = (balanceRaw / 10 ** decimals).toLocaleString();
-          document.getElementById("balance").innerText = `${balanceFormatted} ${symbol}`;
+          const formattedBalance = balance / Math.pow(10, decimals);
+          document.getElementById("balance").innerText = `Your balance: ${formattedBalance} ${symbol}`;
         } catch (err) {
-          document.getElementById("balance").innerText = "Error fetching balance.";
+          document.getElementById("status").innerText = "Error connecting to wallet.";
+          console.error(err);
         }
       } else {
-        document.getElementById("balance").innerText = "Trust Wallet / MetaMask not detected.";
+        document.getElementById("status").innerText = "MetaMask not found.";
       }
     }
 
-    loadBalance();
+    load();
   </script>
 </body>
 </html>
